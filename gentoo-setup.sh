@@ -24,7 +24,7 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # Resolv.conf Copy
     cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
     # Step2 Run Script Download
-    wget -O ./gentoo-setup-chroot.sh https://raw.githubusercontent.com/KotoishiHeart/GentooSetupScripts/main/gentoo-setup-chroot.sh
+    wget -O ./gentoo-setup-chroot.sh https://raw.githubusercontent.com/KotoishiHeart/GentooSetupScript/main/gentoo-setup-chroot.sh
     chmod a+x ./gentoo-setup-chroot.sh
     # Mount System Point
     mount --types proc /proc /mnt/gentoo/proc

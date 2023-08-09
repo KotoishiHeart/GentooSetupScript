@@ -149,13 +149,13 @@ find /var/db/repos/kde/Documentation/package.accept_keywords/ -name '*.keywords'
 
 cd /etc/portage/
 rm make.profile
-ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/no-multilib/systemd make.profile
+ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-multilib make.profile
 
 # Second Stage System Upgrade
 emerge --verbose  --deep --changed-use --update --changed-deps=y --with-bdeps=y --backtrack=0 @world
 
 rm make.profile
-ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/desktop/plasma/systemd make.profile
+ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/desktop/plasma make.profile
 
 cat <<EOF >> /etc/portage/make.conf
 

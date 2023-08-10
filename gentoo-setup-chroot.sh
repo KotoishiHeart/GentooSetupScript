@@ -6,6 +6,9 @@ source /etc/profile
 # Repositories Sync
 emerge-webrsync
 
+# GIT Install
+emerge dev-vcs/git
+
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
 JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
 
@@ -88,9 +91,6 @@ EOF
 
 # NTPD Booted Start
 rc-update add ntpd default
-
-# GIT Install
-emerge dev-vcs/git
 
 cat <<EOF > /etc/portage/package.use/common.use
 media-libs/libsndfile minimal

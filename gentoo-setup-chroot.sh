@@ -245,9 +245,3 @@ sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
 
 # Cleanup
 rm /stage3-*.tar.*
-
-cat <<EOF >> /etc/portage/make.conf
-EOF
-
-# Final System Upgrade
-emerge --verbose  --deep --changed-use --update --changed-deps=y --with-bdeps=y --backtrack=50 @world

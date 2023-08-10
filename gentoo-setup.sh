@@ -1,5 +1,54 @@
 #!/bin/bash
 
+# fdisk process (temp)
+"""
+Welcome to fdisk (util-linux 2.37.2).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0x35d3a221.
+
+Command (m for help): g
+Created a new GPT disklabel (GUID: B8A55BBE-10FF-9C42-A8BD-44DF42D433C3).
+
+Command (m for help): n
+Partition number (1-128, default 1):
+First sector (2048-20971486, default 2048):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-20971486, default 20971486): +1GiB
+
+Created a new partition 1 of type 'Linux filesystem' and of size 1 GiB.
+
+Command (m for help): t
+Selected partition 1
+Partition type or alias (type L to list all): 1
+Changed type of partition 'Linux filesystem' to 'EFI System'.
+
+Command (m for help): n
+Partition number (2-128, default 2):
+First sector (2099200-20971486, default 2099200):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2099200-20971486, default 20971486): +32GiB
+
+Created a new partition 2 of type 'Linux filesystem' and of size 32 GiB.
+
+Command (m for help): t
+Partition number (1,2, default 2): 2
+Partition type or alias (type L to list all): 19
+
+Changed type of partition 'Linux filesystem' to 'Linux swap'.
+
+Command (m for help): n
+Partition number (3-128, default 3):
+First sector (6293504-20971486, default 6293504):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (6293504-20971486, default 20971486):
+
+Created a new partition 3 of type 'Linux filesystem' and of size *** GiB.
+
+Command (m for help): w
+The partition table has been altered.
+Syncing disks.
+"""
+
 # /mnt/gentoo にインストール先のドライブをマウントして実行する。
 # マウントされていないと失敗する
 

@@ -135,9 +135,6 @@ sync-openpgp-key-refresh-retry-delay-max = 60
 sync-openpgp-key-refresh-retry-delay-mult = 4
 EOF
 
-touch /etc/portage/package.accept_keywords/zzz.keywords
-touch /etc/portage/package.use/zzz.use
-
 # Repositories Sync
 emaint --auto sync
 

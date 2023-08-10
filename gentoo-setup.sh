@@ -71,6 +71,10 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     cp gentoo-setup-chroot.sh /mnt/gentoo/
     cp gentoo-update /mnt/gentoo/usr/local/bin/
     cp linux-update /mnt/gentoo/usr/local/bin/
+
+    # Autowrite File
+    touch /mnt/gentoo/etc/portage/package.accept_keywords/zzz.keywords
+    touch /mnt/gentoo/etc/portage/package.use/zzz.use
     
     # UnPackage
     cd /mnt/gentoo/

@@ -6,42 +6,6 @@ source /etc/profile
 # Repositories Sync
 emerge-webrsync
 
-# Generate Locale JP
-localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
-locale-gen
-eselect locale set 4
-source /etc/profile
-
-# Timezone Setting
-echo "Asia/Tokyo" > /etc/timezone
-emerge --config sys-libs/timezone-data
-
-# DHCP Service Setup
-emerge sys-apps/mlocate net-misc/dhcpcd
-rc-update add dhcpcd default
-
-# NTPD Setting
-emerge net-misc/ntp
-mv /etc/ntp.conf /etc/ntp.conf.old
-mv /etc/conf.d/ntp-client /etc/conf.d/ntp-client.old
-
-# NTPD Server Select
-cat <<EOF > /etc/ntp.conf
-server ntp.nict.jp
-EOF
-
-# NTPD Client Setting
-cat <<EOF > /etc/conf.d/ntp-client
-NTPCLIENT_CMD="ntpdate"
-NTPCLIENT_OPTS="-s -d -u "ntp.nict.jp"
-EOF
-
-# NTPD Booted Start
-rc-update add ntpd default
-
-# GIT Install
-emerge dev-vcs/git
-
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
 JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
 
@@ -91,6 +55,42 @@ GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/p
 # Language Setting
 L10N="ja"
 EOF
+
+# Generate Locale JP
+localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+locale-gen
+eselect locale set 4
+source /etc/profile
+
+# Timezone Setting
+echo "Asia/Tokyo" > /etc/timezone
+emerge --config sys-libs/timezone-data
+
+# DHCP Service Setup
+emerge sys-apps/mlocate net-misc/dhcpcd
+rc-update add dhcpcd default
+
+# NTPD Setting
+emerge net-misc/ntp
+mv /etc/ntp.conf /etc/ntp.conf.old
+mv /etc/conf.d/ntp-client /etc/conf.d/ntp-client.old
+
+# NTPD Server Select
+cat <<EOF > /etc/ntp.conf
+server ntp.nict.jp
+EOF
+
+# NTPD Client Setting
+cat <<EOF > /etc/conf.d/ntp-client
+NTPCLIENT_CMD="ntpdate"
+NTPCLIENT_OPTS="-s -d -u "ntp.nict.jp"
+EOF
+
+# NTPD Booted Start
+rc-update add ntpd default
+
+# GIT Install
+emerge dev-vcs/git
 
 cat <<EOF > /etc/portage/package.use/common.use
 media-libs/libsndfile minimal

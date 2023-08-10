@@ -43,6 +43,7 @@ source /etc/profile
 emerge dev-vcs/git
 
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
 
 # Portage Configure Set
 cat <<EOF > /etc/portage/make.conf
@@ -70,7 +71,7 @@ CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/port
 EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-continue=y"
 
 # Add Compile Option
-MAKEOPTS="-j $CORES"
+MAKEOPTS="-j $JOBS"
 
 # Video Chip Setting
 VIDEO_CARDS="amdgpu radeon"

@@ -46,9 +46,6 @@ VIDEO_CARDS="amdgpu radeon"
 # Accepted Licanse
 ACCEPT_LICENSE="* -@EULA google-chrome"
 
-# Enable testing package install
-ACCEPT_KEYWORDS="~amd64"
-
 # Platforms
 GRUB_PLATFORMS="efi-64"
 
@@ -245,3 +242,12 @@ sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
 
 # Cleanup
 rm /stage3-*.tar.*
+
+cat <<EOF >> /etc/portage/make.conf
+
+# Enable testing package install
+ACCEPT_KEYWORDS="~amd64"
+EOF
+
+# Final System Upgrade
+emerge --verbose  --deep --changed-use --update --changed-deps=y --with-bdeps=y --backtrack=50 @world

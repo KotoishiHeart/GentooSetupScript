@@ -6,13 +6,19 @@ source /etc/profile
 # Repositories Sync
 emerge-webrsync
 
-# DHCP Service Setup
-emerge sys-apps/mlocate net-misc/dhcpcd
-rc-update add dhcpcd default
+# Generate Locale JP
+localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+locale-gen
+eselect locale set 4
+source /etc/profile
 
 # Timezone Setting
 echo "Asia/Tokyo" > /etc/timezone
 emerge --config sys-libs/timezone-data
+
+# DHCP Service Setup
+emerge sys-apps/mlocate net-misc/dhcpcd
+rc-update add dhcpcd default
 
 # NTPD Setting
 emerge net-misc/ntp
@@ -32,12 +38,6 @@ EOF
 
 # NTPD Booted Start
 rc-update add ntpd default
-
-# Generate Locale JP
-localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
-locale-gen
-eselect locale set 4
-source /etc/profile
 
 # GIT Install
 emerge dev-vcs/git

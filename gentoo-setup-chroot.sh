@@ -193,13 +193,16 @@ emerge app-benchmarks/unigine-heaven-bin app-benchmarks/unigine-superposition-bi
 emerge net-im/discord
 
 # Flatpak Install
-emerge --ask sys-apps/flatpak games-util/game-device-udev-rules
+emerge sys-apps/flatpak games-util/game-device-udev-rules
 
 # EPSON Printer Driver
 emerge net-print/cups net-print/epson-inkjet-printer-escpr
 
 # CUPS Daemon Enable
 rc-update add cupsd default
+
+# need SecondLife Firestorm Viewer build
+emerge dev-python/pip dev-util/cmake sys-devel/gcc:11 x11-libs/libXinerama x11-libs/libXrandr media-libs/fontconfig
 
 # Firmware Install
 emerge sys-kernel/linux-firmware

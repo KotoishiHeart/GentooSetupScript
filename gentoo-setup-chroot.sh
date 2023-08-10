@@ -9,53 +9,6 @@ emerge-webrsync
 # GIT Install
 emerge dev-vcs/git
 
-CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
-JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
-
-# Portage Configure Set
-cat <<EOF > /etc/portage/make.conf
-# These settings were set by the catalyst build script that automatically built this stage.
-# Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
-COMMON_FLAGS="-O2 -march=znver2 -mtune=znver4 -pipe"
-CFLAGS="\${COMMON_FLAGS}"
-CXXFLAGS="\${COMMON_FLAGS}"
-FCFLAGS="\${COMMON_FLAGS}"
-FFLAGS="\${COMMON_FLAGS}"
-
-# NOTE: This stage was built with the bindist Use flag enabled
-
-# This sets the language of build output to English.
-# Please keep this setting intact when reporting bugs.
-LC_MESSAGES=C.utf8
-
-# Add CPU Flags
-CPU_FLAGS_X86="aes avx fma3 mmx rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
-
-# autounmask-write disable protects
-CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
-
-# add option autounmask-write and continue
-EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-continue=y"
-
-# Add Compile Option
-MAKEOPTS="-j $JOBS"
-
-# Video Chip Setting
-VIDEO_CARDS="amdgpu radeon"
-
-# Accepted Licanse
-ACCEPT_LICENSE="* -@EULA google-chrome"
-
-# Platforms
-GRUB_PLATFORMS="efi-64"
-
-# Mirror Setting
-GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
-
-# Language Setting
-L10N="ja"
-EOF
-
 # Generate Locale JP
 localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
 locale-gen
@@ -135,8 +88,58 @@ EOF
 # Repositories Sync
 emaint --auto sync
 
+# Portage Configure Set
+CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
+
+cat <<EOF > /etc/portage/make.conf
+# These settings were set by the catalyst build script that automatically built this stage.
+# Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
+COMMON_FLAGS="-O2 -march=znver2 -mtune=znver4 -pipe"
+CFLAGS="\${COMMON_FLAGS}"
+CXXFLAGS="\${COMMON_FLAGS}"
+FCFLAGS="\${COMMON_FLAGS}"
+FFLAGS="\${COMMON_FLAGS}"
+
+# NOTE: This stage was built with the bindist Use flag enabled
+
+# This sets the language of build output to English.
+# Please keep this setting intact when reporting bugs.
+LC_MESSAGES=C.utf8
+
+# Add CPU Flags
+CPU_FLAGS_X86="aes avx fma3 mmx rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
+
+# autounmask-write disable protects
+CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
+
+# add option autounmask-write and continue
+EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-continue=y"
+
+# Add Compile Option
+MAKEOPTS="-j $JOBS"
+
+# Video Chip Setting
+VIDEO_CARDS="amdgpu radeon"
+
+# Enable testing package install
+ACCEPT_KEYWORDS="~amd64"
+
+# Accepted Licanse
+ACCEPT_LICENSE="* -@EULA google-chrome"
+
+# Platforms
+GRUB_PLATFORMS="efi-64"
+
+# Mirror Setting
+GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
+
+# Language Setting
+L10N="ja"
+EOF
+
 # First Stage System Upgrade
-emerge --verbose --deep --changed-use --update --changed-deps=y --with-bdeps=y --backtrack=0 @world
+emerge --verbose --deep --changed-use --update --changed-deps=y --with-bdeps=y --backtrack=50 @world
 
 # KDE Repository Accept Keywords Setting
 cd /etc/portage/package.accept_keywords/
@@ -244,9 +247,6 @@ sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
 rm /stage3-*.tar.*
 
 cat <<EOF >> /etc/portage/make.conf
-
-# Enable testing package install
-ACCEPT_KEYWORDS="~amd64"
 EOF
 
 # Final System Upgrade

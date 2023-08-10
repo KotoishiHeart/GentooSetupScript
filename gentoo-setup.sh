@@ -66,8 +66,12 @@ GENTOO_TARBALL_MIRROR_ROOT=http://ftp.iij.ad.jp/pub/linux/gentoo/releases/amd64/
 GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64${PREFIX_HARDENED}${PREFIX_NOMULTILIB}${PREFIX_INITSYSTEM}.txt --silent | grep stage | cut -d' ' -f 1`
 
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
-    # Step2 Run Script Copy
+    # User Script Copy
+    mkdir /mnt/gentoo/usr/local/bin/
     cp gentoo-setup-chroot.sh /mnt/gentoo/
+    cp gentoo-update /mnt/gentoo/usr/local/bin/
+    cp linux-update /mnt/gentoo/usr/local/bin/
+    
     # UnPackage
     cd /mnt/gentoo/
     wget ${GENTOO_TARBALL_MIRROR_ROOT}${GENTOO_TARBALL_LASTEST}
@@ -75,8 +79,10 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
     # Resolv.conf Copy
     cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
-    # Step2 Run Script Add Run Permission
+    # Add Run Permission
     chmod a+x ./gentoo-setup-chroot.sh
+    chmod a+x /usr/local/bin/gentoo-update
+    chmod a+x /usr/local/bin/linux-update
     # Mount System Point
     mount --types proc /proc /mnt/gentoo/proc
     mount --rbind /sys /mnt/gentoo/sys

@@ -67,14 +67,10 @@ GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64${P
 
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
-    mkdir /mnt/gentoo/usr/local/bin/
+    mkdir -p /mnt/gentoo/usr/local/bin/
     cp gentoo-setup-chroot.sh /mnt/gentoo/
     cp gentoo-update /mnt/gentoo/usr/local/bin/
     cp linux-update /mnt/gentoo/usr/local/bin/
-
-    # Autowrite File
-    touch /mnt/gentoo/etc/portage/package.accept_keywords/zzz.keywords
-    touch /mnt/gentoo/etc/portage/package.use/zzz.use
     
     # UnPackage
     cd /mnt/gentoo/
@@ -83,6 +79,9 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
     # Resolv.conf Copy
     cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
+    # Autowrite File
+    touch /mnt/gentoo/etc/portage/package.accept_keywords/zzz.keywords
+    touch /mnt/gentoo/etc/portage/package.use/zzz.use
     # Add Run Permission
     chmod a+x ./gentoo-setup-chroot.sh
     chmod a+x /usr/local/bin/gentoo-update

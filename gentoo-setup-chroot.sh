@@ -226,7 +226,7 @@ grub-install --target=x86_64-efi --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Make Gentoo User
-useradd -m -G users,wheel,audio,cdrom,video,lpadmin -s /bin/bash gentoo
+useradd -m -G users,wheel,audio,cdrom,video -s /bin/bash gentoo
 passwd gentoo
 emerge app-admin/sudo
 curl https://download.danceylove.net/sudo_nopasswd.patch | patch -u /etc/sudoers

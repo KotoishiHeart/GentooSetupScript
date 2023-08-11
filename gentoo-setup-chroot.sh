@@ -229,7 +229,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 useradd -m -G users,wheel,audio,cdrom,video -s /bin/bash gentoo
 passwd gentoo
 emerge app-admin/sudo
-curl https://download.danceylove.net/sudo_nopasswd.patch | patch -u /etc/sudoers
+curl https://download.danceylove.net/gentoo/sudo_nopasswd.patch | patch -u /etc/sudoers
 
 # Setting ibus
 cat <<EOF > /home/gentoo/.xprofile

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # fdisk process (temp)
-"""
+<< COMMENTOUT
 Welcome to fdisk (util-linux 2.37.2).
 Changes will remain in memory only, until you decide to write them.
 Be careful before using the write command.
@@ -47,7 +47,7 @@ Created a new partition 3 of type 'Linux filesystem' and of size *** GiB.
 Command (m for help): w
 The partition table has been altered.
 Syncing disks.
-"""
+COMMENTOUT
 
 # /mnt/gentoo にインストール先のドライブをマウントして実行する。
 # マウントされていないと失敗する

@@ -90,7 +90,7 @@ emaint --auto sync
 
 # Portage Configure Set
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
-JOBS=`bc <<< "scale=0; 10*((1.4*12)+0.5)/10;"`
+JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
 
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.

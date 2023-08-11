@@ -108,7 +108,7 @@ FFLAGS="\${COMMON_FLAGS}"
 LC_MESSAGES=C.utf8
 
 # Add CPU Flags
-CPU_FLAGS_X86="aes avx fma3 mmx rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
+CPU_FLAGS_X86="aes avx fma3 mmx mmxext rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
 
 # autounmask-write disable protects
 CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"

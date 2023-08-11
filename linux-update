@@ -1,0 +1,60 @@
+#!/bin/bash
+
+str=`uname -r`
+
+CurrentLinuxVersion=`echo $str | awk -F'[-]' '{print $1}'`
+CurrentLinuxMajorVersion=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $1}'`
+CurrentLinuxMinorVersion=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $2}'`
+CurrentLinuxRevision=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $3}'`
+
+dirs=`find /usr/src -maxdepth 1 -type d`
+NextLinuxVersion=''
+NextLinuxMajorVersion=$CurrentLinuxMajorVersion
+NextLinuxMinorVersion=$CurrentLinuxMinorVersion
+NextLinuxRevision=$CurrentLinuxRevision
+for dir in $dirs;
+do
+    LinuxVersion=`echo $dir | awk -F'[-]' '{print $2}'`
+    if [ "${LinuxVersion}" != "" ]; then
+        LinuxMajorVersion=`echo $LinuxVersion | awk -F'[.]' '{print $1}'`
+        LinuxMinorVersion=`echo $LinuxVersion | awk -F'[.]' '{print $2}'`
+        LinuxRevision=`echo $LinuxVersion | awk -F'[.]' '{print $3}'`
+        if [ $(($LinuxMajorVersion)) -gt $(($NextLinuxMajorVersion)) ]; then
+            NextLinuxVersion=$LinuxVersion
+            NextLinuxMajorVersion=$LinuxMajorVersion
+            NextLinuxMinorVersion=$LinuxMinorVersion
+            NextLinuxRevision=$LinuxRevision
+        elif [ $(($LinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) -a $(($LinuxMinorVersion)) -gt $(($NextLinuxMinorVersion)) ]; then
+            NextLinuxVersion=$LinuxVersion
+            NextLinuxMajorVersion=$LinuxMajorVersion
+            NextLinuxMinorVersion=$LinuxMinorVersion
+            NextLinuxRevision=$LinuxRevision
+        elif [ $(($LinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) -a $(($LinuxMinorVersion)) -eq $(($NextLinuxMinorVersion)) -a $(($LinuxRevision)) -gt $(($NextLinuxRevision)) ]; then
+            NextLinuxVersion=$LinuxVersion
+            NextLinuxMajorVersion=$LinuxMajorVersion
+            NextLinuxMinorVersion=$LinuxMinorVersion
+            NextLinuxRevision=$LinuxRevision
+        fi
+    fi
+done
+
+RES=`find /boot -name *${NextLinuxVersion}* 2>/dev/null`
+if [ $? -ne 0 ]; then
+  exit
+elif [ -n "$RES" ]; then
+  exit
+fi
+
+if [ "${NextLinuxVersion}" != "" ]; then
+    cd /usr/src/
+    rm linux
+    ln -s *${NextLinuxVersion}* linux
+    cd /usr/src/*${NextLinuxVersion}*
+    cp /boot/config-${CurrentLinuxVersion}-gentoo .config
+    echo ${CurrentLinuxVersion}
+    make olddefconfig
+    make -j `grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+    make modules_install
+    make install
+    grub-mkconfig -o /boot/grub/grub.cfg
+fi

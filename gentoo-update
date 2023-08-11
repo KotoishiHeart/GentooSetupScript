@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# System Repositories Sync
+emaint --auto sync
+
+# KDE Plasma Package Accept
+cd /etc/portage/package.accept_keywords/
+FILES=`find . -xtype l`
+for FILE in $FILES;
+do
+    rm -f $FILE
+done
+
+FILES=`find /var/db/repos/kde/Documentation/package.accept_keywords/ -name "*.keywords" -not -name "*9999*.keywords" -not -name "*live*.keywords"`
+for FILE in $FILES;
+do
+    FILENAME=`basename $FILE`
+    if [ ! -f $FILENAME ]; then
+      ln -s $FILE
+    fi
+done
+
+# System Update
+emerge --ask --update --deep --newuse --with-bdeps=y --verbose-conflicts --backtrack=50 @world
+eclean --deep distfiles
+eclean --deep packages
+emerge --backtrack=0 -avuDpt @world
+
+# Application Launcher Refresh
+update-desktop-database /usr/share/applications/
+update-mime-database /usr/share/mime
+
+# Linux Kernel Update
+linux-update

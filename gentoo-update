@@ -21,7 +21,7 @@ do
 done
 
 # System Update
-emerge --ask --verbose --update--deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=0 @world
+emerge --ask --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=0 @world
 eclean --deep distfiles
 eclean --deep packages
 

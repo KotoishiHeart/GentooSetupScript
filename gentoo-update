@@ -21,10 +21,9 @@ do
 done
 
 # System Update
-emerge --ask --update --deep --newuse --with-bdeps=y --verbose-conflicts --backtrack=50 @world
+emerge --ask --verbose --update--deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=0 @world
 eclean --deep distfiles
 eclean --deep packages
-emerge --backtrack=0 -avuDpt @world
 
 # Application Launcher Refresh
 update-desktop-database /usr/share/applications/

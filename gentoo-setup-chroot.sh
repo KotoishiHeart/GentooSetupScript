@@ -122,9 +122,6 @@ MAKEOPTS="-j $JOBS"
 # Video Chip Setting
 VIDEO_CARDS="amdgpu radeon"
 
-# Enable testing package install
-ACCEPT_KEYWORDS="~amd64"
-
 # Accepted Licanse
 ACCEPT_LICENSE="* -@EULA google-chrome"
 

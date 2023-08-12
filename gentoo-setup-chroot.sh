@@ -6,6 +6,12 @@ source /etc/profile
 # Repositories Sync
 emerge-webrsync
 
+CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
+
+# Old GCC Compiler
+MAKEOPTS="-j $JOBS" emerge --oneshot sys-devel/gcc:11
+
 # GIT Install
 emerge dev-vcs/git
 
@@ -89,9 +95,6 @@ EOF
 emaint --auto sync
 
 # Portage Configure Set
-CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
-JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
-
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
@@ -197,7 +200,7 @@ emerge net-print/cups net-print/epson-inkjet-printer-escpr
 rc-update add cupsd default
 
 # need SecondLife Firestorm Viewer build
-emerge dev-python/pip dev-util/cmake sys-devel/gcc:11 x11-libs/libXinerama x11-libs/libXrandr media-libs/fontconfig
+emerge dev-python/pip dev-util/cmake x11-libs/libXinerama x11-libs/libXrandr media-libs/fontconfig
 
 # Firmware Install
 emerge sys-kernel/linux-firmware

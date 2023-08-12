@@ -241,7 +241,7 @@ EOF
 
 chown gentoo:gentoo -R /home/gentoo/
 
-sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
+# sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
 
 # Cleanup
 rm /stage3-*.tar.*

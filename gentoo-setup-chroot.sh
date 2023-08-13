@@ -157,7 +157,7 @@ ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib
 
 cat <<EOF >> /etc/portage/make.conf
 
-USE="ibus cjk emoji qt5 qt6 kde dvd pulseaudio alsa cdr proton -gtk -gnome -bittorrent"
+USE="ibus cjk emoji qt5 qt6 kde dvd pulseaudio alsa cdr proton context accessibility -gnome -bittorrent -games -education"
 EOF
 
 # Third Stage System Upgrade
@@ -177,6 +177,8 @@ EOF
 rc-update add display-manager default
 # KDE Plasma Install
 emerge kde-plasma/plasma-meta kde-apps/kde-apps-meta kde-plasma/sddm-kcm
+# Other Application
+emerge app-office/calligra mail-client/thunderbird virtual/wine
 
 # PulseAudio Daemon Setup
 emerge --noreplace media-sound/pulseaudio-daemon

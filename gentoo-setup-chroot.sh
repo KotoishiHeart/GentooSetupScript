@@ -9,8 +9,12 @@ emerge-webrsync
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
 JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
 
-# Old GCC Compiler
-MAKEOPTS="-j $JOBS" emerge --oneshot sys-devel/gcc:11
+cat <<EOF >> /etc/portage/make.conf
+MAKEOPTS="-j $JOBS"
+EOF
+
+# Old GCC Compiler (znver4 unsupport)
+emerge --oneshot sys-devel/gcc:11
 
 # GIT Install
 emerge dev-vcs/git
@@ -242,8 +246,6 @@ ibus-daemon -drx
 EOF
 
 chown gentoo:gentoo -R /home/gentoo/
-
-# sudo -u gentoo flatpak install flathub com.valvesoftware.Steam
 
 # Cleanup
 rm /stage3-*.tar.*

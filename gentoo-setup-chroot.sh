@@ -147,7 +147,7 @@ rm make.profile
 ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-multilib/hardened make.profile
 
 # Second Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=0 @world
+emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y @world
 
 rm make.profile
 ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop/plasma make.profile
@@ -157,8 +157,12 @@ cat <<EOF >> /etc/portage/make.conf
 USE="ibus cjk emoji qt5 qt6 kde dvd pulseaudio alsa cdr proton context accessibility -gnome -bittorrent -games -education"
 EOF
 
+cat <<EOF > /etc/portage/package.use/cmake.use
+dev-util/cmake -qt5
+EOF
+
 # Third Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=0 @world
+emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y @world
 
 # Setup Japanese Input Methods
 emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/monafont media-fonts/sazanami fontconfig app-i18n/mozc

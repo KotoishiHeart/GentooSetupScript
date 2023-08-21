@@ -114,7 +114,7 @@ CPU_FLAGS_X86="aes avx f16c fma3 mmx mmxext pclmul rdrand sha sse sse2 sse3 sse4
 CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
 
 # add option autounmask-write and continue
-EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-continue=y"
+EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts"
 
 # Add Compile Option
 MAKEOPTS="-j $JOBS"
@@ -136,7 +136,7 @@ L10N="ja"
 EOF
 
 # First Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y --backtrack=50 @world
+emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=50 @world
 
 # KDE Repository Accept Keywords Setting
 cd /etc/portage/package.accept_keywords/
@@ -147,7 +147,7 @@ rm make.profile
 ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-multilib/hardened make.profile
 
 # Second Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y @world
+emerge --verbose --update --deep --changed-use --changed-deps=y @world
 
 rm make.profile
 ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop/plasma make.profile
@@ -162,7 +162,7 @@ dev-util/cmake -qt5
 EOF
 
 # Third Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --with-bdeps=y @world
+emerge --verbose --update --deep --changed-use --changed-deps=y @world
 
 # Setup Japanese Input Methods
 emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/monafont media-fonts/sazanami fontconfig app-i18n/mozc

@@ -85,8 +85,7 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     touch /mnt/gentoo/etc/portage/package.use/zzz.use
     # Add Run Permission
     chmod a+x ./gentoo-setup-chroot.sh
-    chmod a+x ./usr/local/bin/gentoo-update
-    chmod a+x ./usr/local/bin/linux-update
+    chmod a+x ./usr/local/bin/*
     # Mount System Point
     mount --types proc /proc /mnt/gentoo/proc
     mount --rbind /sys /mnt/gentoo/sys

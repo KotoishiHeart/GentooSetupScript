@@ -243,6 +243,3 @@ ibus-daemon -drx
 EOF
 
 chown gentoo:gentoo -R /home/gentoo/
-
-# Cleanup
-rm /stage3-*.tar.*

@@ -69,9 +69,9 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
     mkdir -p /mnt/gentoo/usr/local/bin/
     cp gentoo-setup-chroot.sh /mnt/gentoo/
-    cp gentoo-update /mnt/gentoo/usr/local/bin/
-    cp linux-update /mnt/gentoo/usr/local/bin/
-    cp package-phoenix-firestorm /mnt/gentoo/usr/local/bin/
+    cp myscripts/gentoo-update /mnt/gentoo/usr/local/bin/
+    cp myscripts/linux-update /mnt/gentoo/usr/local/bin/
+    cp myscripts/package-phoenix-firestorm /mnt/gentoo/usr/local/bin/
     
     # UnPackage
     cd /mnt/gentoo/

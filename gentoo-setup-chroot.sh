@@ -88,7 +88,6 @@ EOF
 # Repositories Sync
 emaint --auto sync
 
-
 # Portage Configure Set
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
 JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`

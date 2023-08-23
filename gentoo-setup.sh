@@ -49,7 +49,7 @@ The partition table has been altered.
 Syncing disks.
 COMMENTOUT
 
-# /mnt/gentoo にインストール先のドライブをマウントして実行する。
+# Require: Mounting the system drive and bootloader drive
 # マウントされていないと失敗する
 
 mountpoint -q /mnt/gentoo/

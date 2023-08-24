@@ -94,7 +94,10 @@ JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
-COMMON_FLAGS="-O2 -march=znver2 -mtune=znver4 -pipe"
+### Zen2
+# COMMON_FLAGS="-O2 -march=znver2 -pipe"
+### Zen4
+COMMON_FLAGS="-O2 -march=znver4 -pipe"
 CFLAGS="\${COMMON_FLAGS}"
 CXXFLAGS="\${COMMON_FLAGS}"
 FCFLAGS="\${COMMON_FLAGS}"
@@ -138,7 +141,7 @@ L10N="ja"
 EOF
 
 # First Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=50 @world
+emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=30 @world
 
 # KDE Repository Accept Keywords Setting
 cd /etc/portage/package.accept_keywords/

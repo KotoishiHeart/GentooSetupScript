@@ -72,6 +72,8 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     cp myscripts/gentoo-update /mnt/gentoo/usr/local/bin/
     cp myscripts/linux-update /mnt/gentoo/usr/local/bin/
     cp myscripts/package-phoenix-firestorm /mnt/gentoo/usr/local/bin/
+    cp --parents kernel-config/kernel.conf /mnt/gentoo/var/tmp/
+    cp --parents patches/sudo_nopasswd.patch /mnt/gentoo/var/tmp/
     
     # UnPackage
     cd /mnt/gentoo/

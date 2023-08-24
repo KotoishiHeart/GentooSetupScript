@@ -220,7 +220,7 @@ eselect kernel set 1
 cd linux
 wget -O .config https://download.danceylove.net/gentoo/kernel.conf
 make olddefconfig
-make -j $[$(grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g') + 1]
+make -j $JOBS
 make modules_install
 make install
 

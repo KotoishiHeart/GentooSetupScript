@@ -155,7 +155,7 @@ ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-m
 emerge --verbose --update --deep --changed-use --changed-deps=y @world
 
 rm make.profile
-ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop/plasma make.profile
+ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop make.profile
 
 cat <<EOF >> /etc/portage/make.conf
 

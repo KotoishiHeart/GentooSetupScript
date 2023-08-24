@@ -50,8 +50,6 @@ if [ "${NextLinuxVersion}" != "" ]; then
     rm linux
     ln -s *${NextLinuxVersion}* linux
     cd /usr/src/*${NextLinuxVersion}*
-    cp /boot/config-${CurrentLinuxVersion}-gentoo .config
-    echo ${CurrentLinuxVersion}
     make olddefconfig
     make -j `grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
     make modules_install

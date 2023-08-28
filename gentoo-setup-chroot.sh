@@ -46,11 +46,6 @@ cat <<EOF > /etc/portage/package.use/common.use
 media-libs/libsndfile minimal
 EOF
 
-cat <<EOF > /etc/portage/package.use/audio.use
-media-video/pipewire -sound-server
-media-sound/pulseaudio daemon
-EOF
-
 # ESelect Repository Enable
 emerge eselect-repository
 

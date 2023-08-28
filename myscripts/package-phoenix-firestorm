@@ -6,7 +6,7 @@ git clone https://vcs.firestormviewer.org/fs-build-variables
 export AUTOBUILD_VARIABLES_FILE=/usr/local/firestorm/fs-build-variables/variables
 
 if [ -d ./phoenix-firestorm ]; then
-	git clone https://vcs.firestormviewer.org/phoenix-firestorm
+	git clone https://github.com/FirestormViewer/phoenix-firestorm/
 	cd ./phoenix-firestorm
 else
 	git reset --hard HEAD

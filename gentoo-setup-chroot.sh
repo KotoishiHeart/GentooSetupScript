@@ -140,6 +140,14 @@ GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/p
 L10N="ja"
 EOF
 
+# Install GCC 13
+emerge sys-devel/gcc:13
+
+# Change GCC Version from 12 to 13
+eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
+source /etc/profile
+emerge --oneshot --usepkg=n sys-devel/libtool
+
 # First Stage System Upgrade
 emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=30 @world
 

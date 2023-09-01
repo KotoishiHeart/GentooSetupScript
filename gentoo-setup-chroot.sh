@@ -161,7 +161,7 @@ ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-m
 emerge --verbose --update --deep --changed-use --changed-deps=y @world
 
 rm make.profile
-ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop make.profile
+ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop/plasma make.profile
 
 cat <<EOF >> /etc/portage/make.conf
 
@@ -199,7 +199,7 @@ emerge --noreplace media-sound/pulseaudio-daemon
 emerge www-client/google-chrome
 
 # Benchmarks Install
-emerge app-benchmarks/unigine-heaven-bin app-benchmarks/unigine-superposition-bin app-benchmarks/unigine-valley-bin
+# emerge app-benchmarks/unigine-heaven-bin app-benchmarks/unigine-superposition-bin app-benchmarks/unigine-valley-bin
 
 # Message Application Install
 emerge net-im/discord

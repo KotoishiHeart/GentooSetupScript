@@ -53,7 +53,7 @@ emerge eselect-repository
 eselect repository enable kde
 
 # Unigine Benchmarks Install Repository Add
-eselect repository enable simonvanderveldt
+# eselect repository enable simonvanderveldt # EAPI 7 Only
 
 # Original Repository Add
 eselect repository add khgenrepo git https://github.com/KotoishiHeart/khgenrepo/
@@ -125,6 +125,9 @@ VIDEO_CARDS="amdgpu radeon"
 # Accepted Licanse
 ACCEPT_LICENSE="* -@EULA google-chrome"
 
+# Accepted Keywords
+ACCEPT_KEYWORDS="~amd64"
+
 # Platforms
 GRUB_PLATFORMS="efi-64"
 
@@ -178,7 +181,7 @@ emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic
 # Display Manager Install
 emerge x11-misc/sddm gui-libs/display-manager-init
 # Display Manager Setting
-cat <<EOF >> /etc/conf.d/display-manager
+cat <<EOF > /etc/conf.d/display-manager
 CHECKVT=7
 DISPLAYMANAGER="sddm"
 EOF

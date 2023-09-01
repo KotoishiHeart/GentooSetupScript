@@ -68,6 +68,7 @@ GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64${P
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
     mkdir -p /mnt/gentoo/usr/local/bin/
+    mkdir -p /mnt/gentoo/var/tmp/
     cp gentoo-setup-chroot.sh /mnt/gentoo/
     cp myscripts/gentoo-update /mnt/gentoo/usr/local/bin/
     cp myscripts/linux-update /mnt/gentoo/usr/local/bin/

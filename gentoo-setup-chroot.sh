@@ -7,7 +7,7 @@ source /etc/profile
 emerge-webrsync
 
 # GIT Install
-emerge dev-vcs/git
+emerge dev-vcs/git --backtrack=50
 
 # Generate Locale JP
 localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
@@ -44,6 +44,10 @@ rc-update add ntpd default
 
 cat <<EOF > /etc/portage/package.use/common.use
 media-libs/libsndfile minimal
+EOF
+
+cat <<EOF > /etc/portage/package.use/gcc.use
+sys-devel/gcc openmp
 EOF
 
 # ESelect Repository Enable

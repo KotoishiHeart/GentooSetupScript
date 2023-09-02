@@ -81,7 +81,15 @@ sync-openpgp-key-refresh-retry-delay-mult = 4
 EOF
 
 # Repositories Sync
-emaint --auto sync
+emerge --sync
+
+# Install GCC 13
+emerge sys-devel/gcc:13
+
+# Change GCC Version from 12 to 13
+eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
+source /etc/profile
+emerge --oneshot --usepkg=n sys-devel/libtool
 
 # Portage Configure Set
 CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
@@ -137,14 +145,6 @@ GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/p
 # Language Setting
 L10N="ja"
 EOF
-
-# Install GCC 13
-emerge sys-devel/gcc:13
-
-# Change GCC Version from 12 to 13
-eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
-source /etc/profile
-emerge --oneshot --usepkg=n sys-devel/libtool
 
 # First Stage System Upgrade
 emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=30 @world

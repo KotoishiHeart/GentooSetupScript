@@ -6,6 +6,61 @@ source /etc/profile
 # Repositories Sync
 emerge-webrsync
 
+# Portage Configure Set
+CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
+cat <<EOF > /etc/portage/make.conf
+# These settings were set by the catalyst build script that automatically built this stage.
+# Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
+### Zen2
+# COMMON_FLAGS="-O2 -march=znver2 -pipe"
+### Zen4
+COMMON_FLAGS="-O2 -march=znver4 -pipe"
+CFLAGS="\${COMMON_FLAGS}"
+CXXFLAGS="\${COMMON_FLAGS}"
+FCFLAGS="\${COMMON_FLAGS}"
+FFLAGS="\${COMMON_FLAGS}"
+
+# NOTE: This stage was built with the bindist Use flag enabled
+
+# This sets the language of build output to English.
+# Please keep this setting intact when reporting bugs.
+LC_MESSAGES=C.utf8
+
+# Add CPU Flags
+# znver2
+# CPU_FLAGS_X86="aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
+# znver4
+CPU_FLAGS_X86="aes avx avx2 avx512f avx512dq avx512vl f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
+
+# autounmask-write disable protects
+CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
+
+# add option autounmask-write and continue
+EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts"
+
+# Add Compile Option
+MAKEOPTS="-j $JOBS"
+
+# Video Chip Setting
+VIDEO_CARDS="amdgpu radeon"
+
+# Accepted Licanse
+ACCEPT_LICENSE="* -@EULA google-chrome"
+
+# Accepted Keywords
+ACCEPT_KEYWORDS="~amd64"
+
+# Platforms
+GRUB_PLATFORMS="efi-64"
+
+# Mirror Setting
+GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
+
+# Language Setting
+L10N="ja"
+EOF
+
 # GIT Install
 emerge dev-vcs/git --backtrack=50
 
@@ -83,61 +138,6 @@ EOF
 
 # Repositories Sync
 emerge --sync
-
-# Portage Configure Set
-CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
-JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
-cat <<EOF > /etc/portage/make.conf
-# These settings were set by the catalyst build script that automatically built this stage.
-# Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
-### Zen2
-# COMMON_FLAGS="-O2 -march=znver2 -pipe"
-### Zen4
-COMMON_FLAGS="-O2 -march=znver4 -pipe"
-CFLAGS="\${COMMON_FLAGS}"
-CXXFLAGS="\${COMMON_FLAGS}"
-FCFLAGS="\${COMMON_FLAGS}"
-FFLAGS="\${COMMON_FLAGS}"
-
-# NOTE: This stage was built with the bindist Use flag enabled
-
-# This sets the language of build output to English.
-# Please keep this setting intact when reporting bugs.
-LC_MESSAGES=C.utf8
-
-# Add CPU Flags
-# znver2
-# CPU_FLAGS_X86="aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
-# znver4
-CPU_FLAGS_X86="aes avx avx2 avx512f avx512dq avx512vl f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
-
-# autounmask-write disable protects
-CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
-
-# add option autounmask-write and continue
-EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts"
-
-# Add Compile Option
-MAKEOPTS="-j $JOBS"
-
-# Video Chip Setting
-VIDEO_CARDS="amdgpu radeon"
-
-# Accepted Licanse
-ACCEPT_LICENSE="* -@EULA google-chrome"
-
-# Accepted Keywords
-ACCEPT_KEYWORDS="~amd64"
-
-# Platforms
-GRUB_PLATFORMS="efi-64"
-
-# Mirror Setting
-GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
-
-# Language Setting
-L10N="ja"
-EOF
 
 # Install GCC 13
 emerge sys-devel/gcc:13

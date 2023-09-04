@@ -61,6 +61,18 @@ GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/p
 L10N="ja"
 EOF
 
+cat <<EOF > /etc/portage/package.use/gcc.use
+sys-devel/gcc openmp
+EOF
+
+# Install GCC 13
+emerge sys-devel/gcc:13
+
+# Change GCC Version from 12 to 13
+eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
+source /etc/profile
+emerge --oneshot --usepkg=n sys-devel/libtool
+
 # GIT Install
 emerge dev-vcs/git --backtrack=50
 
@@ -101,10 +113,6 @@ cat <<EOF > /etc/portage/package.use/common.use
 media-libs/libsndfile minimal
 EOF
 
-cat <<EOF > /etc/portage/package.use/gcc.use
-sys-devel/gcc openmp
-EOF
-
 # ESelect Repository Enable
 emerge eselect-repository
 
@@ -138,14 +146,6 @@ EOF
 
 # Repositories Sync
 emerge --sync
-
-# Install GCC 13
-emerge sys-devel/gcc:13
-
-# Change GCC Version from 12 to 13
-eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
-source /etc/profile
-emerge --oneshot --usepkg=n sys-devel/libtool
 
 # First Stage System Upgrade
 emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=30 @world
@@ -181,15 +181,19 @@ emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic
 
 # Display Manager Install
 emerge x11-misc/sddm gui-libs/display-manager-init
+
 # Display Manager Setting
 cat <<EOF > /etc/conf.d/display-manager
 CHECKVT=7
 DISPLAYMANAGER="sddm"
 EOF
+
 # Display Manager Enable
 rc-update add display-manager default
+
 # KDE Plasma Install
 emerge kde-plasma/plasma-meta kde-apps/kde-apps-meta kde-plasma/sddm-kcm
+
 # Other Application
 emerge app-office/calligra mail-client/thunderbird virtual/wine
 

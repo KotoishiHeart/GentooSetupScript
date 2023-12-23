@@ -12,10 +12,7 @@ JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
-### Zen2
-# COMMON_FLAGS="-O2 -march=znver2 -pipe"
-### Zen4
-COMMON_FLAGS="-O2 -march=znver4 -pipe"
+COMMON_FLAGS="-O2 -pipe"
 CFLAGS="\${COMMON_FLAGS}"
 CXXFLAGS="\${COMMON_FLAGS}"
 FCFLAGS="\${COMMON_FLAGS}"
@@ -26,12 +23,6 @@ FFLAGS="\${COMMON_FLAGS}"
 # This sets the language of build output to English.
 # Please keep this setting intact when reporting bugs.
 LC_MESSAGES=C.utf8
-
-# Add CPU Flags
-# znver2
-# CPU_FLAGS_X86="aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
-# znver4
-CPU_FLAGS_X86="aes avx avx2 avx512f avx512dq avx512vl f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 sse4a ssse3"
 
 # autounmask-write disable protects
 CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
@@ -51,9 +42,6 @@ ACCEPT_LICENSE="* -@EULA google-chrome"
 # Accepted Keywords
 ACCEPT_KEYWORDS="~amd64"
 
-# Platforms
-GRUB_PLATFORMS="efi-64"
-
 # Mirror Setting
 GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
 
@@ -65,16 +53,8 @@ cat <<EOF > /etc/portage/package.use/gcc.use
 sys-devel/gcc openmp
 EOF
 
-# Install GCC 13
-emerge sys-devel/gcc:13
-
-# Change GCC Version from 12 to 13
-eselect gcc set `eselect gcc list | grep 13 | cut -d "[" -f2 | cut -d "]" -f1`
-source /etc/profile
-emerge --oneshot --usepkg=n sys-devel/libtool
-
 # GIT Install
-emerge dev-vcs/git --backtrack=50
+emerge dev-vcs/git
 
 # Generate Locale JP
 localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
@@ -119,9 +99,6 @@ emerge eselect-repository
 # KDE Repository Add
 eselect repository enable kde
 
-# Original Repository Add
-eselect repository add khgenrepo git https://github.com/KotoishiHeart/khgenrepo/
-
 # Gentoo Repository Setup
 mkdir -p /etc/portage/repos.conf/
 rm -rf /var/db/repos/gentoo
@@ -147,33 +124,38 @@ EOF
 # Repositories Sync
 emerge --sync
 
-# First Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y --backtrack=30 @world
-
 # KDE Repository Accept Keywords Setting
 cd /etc/portage/package.accept_keywords/
-find /var/db/repos/kde/Documentation/package.accept_keywords/ -name '*.keywords' -not -name '*live*' -not -name '*9999*' | xargs -L 1 ln -s
+find /var/db/repos/kde/Documentation/package.accept_keywords/ -maxdepth 1 -name '*.keywords' -not -name '*live*' -not -name '*9999*' | xargs -L 1 ln -s
 
-cd /etc/portage/
-rm make.profile
-ln -s ../../var/db/repos/gentoo/profiles/default/linux/amd64/23.0/split-usr/no-multilib/hardened make.profile
-
-# Second Stage System Upgrade
+# First Stage System Upgrade
 emerge --verbose --update --deep --changed-use --changed-deps=y @world
-
-rm make.profile
-ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/hardened/desktop/plasma make.profile
 
 cat <<EOF >> /etc/portage/make.conf
 
-USE="ibus cjk emoji qt5 qt6 kde dvd pulseaudio alsa cdr proton context accessibility -gnome -bittorrent -games -education"
+USE="ibus dbus cjk gd emoji qt5 qt6 kde openmp dvd pulseaudio alsa cdr vulkan"
 EOF
 
 cat <<EOF > /etc/portage/package.use/cmake.use
 dev-util/cmake -qt5
 EOF
 
-# Third Stage System Upgrade
+cat <<EOF > /etc/portage/package.use/grub.use
+sys-boot/grub mount
+EOF
+
+cat <<EOF > /etc/portage/package.use/kde-plasma.use
+# KDE Plasma
+kde-plasma/plasma-meta discover flatpak grub
+dev-qt/qttools qdbus designer
+
+# KDE Gear 23.04 on KF6
+kde-apps/kde-apps-meta accessibility admin -education -games -graphics multimedia -network pim -sdk utils
+kde-apps/kdenetwork-meta -bittorrent -dropbox -samba -screencast -webengine
+kde-apps/kdeutils-meta -cups
+EOF
+
+# Second Stage System Upgrade
 emerge --verbose --update --deep --changed-use --changed-deps=y @world
 
 # Setup Japanese Input Methods
@@ -195,7 +177,7 @@ rc-update add display-manager default
 emerge kde-plasma/plasma-meta kde-apps/kde-apps-meta kde-plasma/sddm-kcm
 
 # Other Application
-emerge app-office/calligra mail-client/thunderbird virtual/wine
+emerge app-office/calligra mail-client/thunderbird
 
 # PulseAudio Daemon Setup
 emerge --noreplace media-sound/pulseaudio-daemon
@@ -203,37 +185,17 @@ emerge --noreplace media-sound/pulseaudio-daemon
 # Google Chrome Install
 emerge www-client/google-chrome
 
-# Benchmarks Install
-emerge dev-util/stressapptest
-
-# Message Application Install
-emerge net-im/discord
-
-# Flatpak Install
-emerge sys-apps/flatpak games-util/game-device-udev-rules
-
 # EPSON Printer Driver
-emerge net-print/cups net-print/epson-inkjet-printer-escpr
+emerge net-print/cups-meta
 
 # CUPS Daemon Enable
 rc-update add cupsd default
-
-# need SecondLife Firestorm Viewer build
-emerge dev-python/pip dev-util/cmake x11-libs/libXinerama x11-libs/libXrandr media-libs/fontconfig sys-devel/gcc:11
 
 # Firmware Install
 emerge sys-kernel/linux-firmware
 
 # Linux Kernel
-emerge sys-kernel/gentoo-sources
-cd /usr/src/
-eselect kernel set 1
-cd linux
-cp /var/tmp/kernel-config/kernel.conf .config
-make olddefconfig
-make -j $JOBS
-make modules_install
-make install
+emerge sys-kernel/gentoo-kernel
 
 # Grub2 Install
 emerge --verbose sys-boot/grub

@@ -58,12 +58,8 @@ ret_root=$?
 mountpoint -q /mnt/gentoo/boot/
 ret_boot=$?
 
-PREFIX_HARDENED="-hardened"
-PREFIX_NOMULTILIB="-nomultilib"
-PREFIX_INITSYSTEM="-openrc"
-
 GENTOO_TARBALL_MIRROR_ROOT=http://ftp.iij.ad.jp/pub/linux/gentoo/releases/amd64/autobuilds/
-GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64${PREFIX_HARDENED}${PREFIX_NOMULTILIB}${PREFIX_INITSYSTEM}.txt --silent | grep stage | cut -d' ' -f 1`
+GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64-desktop-openrc.txt --silent | grep stage | cut -d' ' -f 1`
 
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
@@ -72,8 +68,6 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     cp gentoo-setup-chroot.sh /mnt/gentoo/
     cp myscripts/gentoo-update /mnt/gentoo/usr/local/bin/
     cp myscripts/linux-update /mnt/gentoo/usr/local/bin/
-    cp myscripts/package-phoenix-firestorm /mnt/gentoo/usr/local/bin/
-    cp --parents kernel-config/kernel.conf /mnt/gentoo/var/tmp/
     cp --parents patches/sudo_nopasswd.patch /mnt/gentoo/var/tmp/
     
     # UnPackage

@@ -7,12 +7,12 @@ source /etc/profile
 emerge-webrsync
 
 # Portage Configure Set
-CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
-JOBS=`bc <<< "scale=0; 10*((1.4*${CORES})+0.5)/10;"`
+CORES=`grep processor /proc/cpuinfo | wc -l`
+JOBS=`bc <<< "scale=0; 10*((0.8*${CORES})+0.5)/10;"`
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
-COMMON_FLAGS="-O2 -pipe"
+COMMON_FLAGS="-O2 -march=znver4 -pipe"
 CFLAGS="\${COMMON_FLAGS}"
 CXXFLAGS="\${COMMON_FLAGS}"
 FCFLAGS="\${COMMON_FLAGS}"
@@ -45,12 +45,11 @@ ACCEPT_KEYWORDS="~amd64"
 # Mirror Setting
 GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/ https://ftp.jaist.ac.jp/pub/Linux/Gentoo/ http://ftp.jaist.ac.jp/pub/Linux/Gentoo/ https://ftp.riken.jp/Linux/gentoo/ http://ftp.riken.jp/Linux/gentoo/"
 
+# Platform Setting
+GRUB_PLATFORMS="efi-64"
+
 # Language Setting
 L10N="ja"
-EOF
-
-cat <<EOF > /etc/portage/package.use/gcc.use
-sys-devel/gcc openmp
 EOF
 
 # GIT Install
@@ -89,15 +88,14 @@ EOF
 # NTPD Booted Start
 rc-update add ntpd default
 
-cat <<EOF > /etc/portage/package.use/common.use
-media-libs/libsndfile minimal
-EOF
-
 # ESelect Repository Enable
 emerge eselect-repository
 
 # KDE Repository Add
 eselect repository enable kde
+
+# Original Profile Add
+eselect repository add khgenrepo git https://github.com/KotoishiHeart/khgenrepo
 
 # Gentoo Repository Setup
 mkdir -p /etc/portage/repos.conf/
@@ -124,45 +122,46 @@ EOF
 # Repositories Sync
 emerge --sync
 
+cd /etc/portage/
+rm make.profile
+ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/desktop make.profile
+
 # KDE Repository Accept Keywords Setting
 cd /etc/portage/package.accept_keywords/
-find /var/db/repos/kde/Documentation/package.accept_keywords/ -maxdepth 1 -name '*.keywords' -not -name '*live*' -not -name '*9999*' | xargs -L 1 ln -s
+FILES=`find . -xtype l`
+for FILE in $FILES;
+do
+    rm -f $FILE
+done
 
-# First Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y @world
+FILES=`find /var/db/repos/kde/Documentation/package.accept_keywords/ -name "*.keywords" -not -name "*9999*.keywords" -not -name "*live*.keywords"`
+for FILE in $FILES;
+do
+    FILENAME=`basename $FILE`
+    if [ ! -f $FILENAME ]; then
+      ln -s $FILE
+    fi
+done
+
+mkdir /etc/portage/package.unmask/
+cd /etc/portage/package.unmask/
+ln -s /var/db/repos/kde/Documents/package.unmask/kde-frameworks-6.1
+ln -s /var/db/repos/kde/Documents/package.unmask/kde-gear-24.02
+ln -s /var/db/repos/kde/Documents/package.unmask/kde-plasma-6.0
+
+# System Upgrade
+emerge --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world
 
 cat <<EOF >> /etc/portage/make.conf
 
-USE="ibus dbus cjk gd emoji qt5 qt6 kde openmp dvd pulseaudio alsa cdr vulkan"
+USE="cjk emoji jumbo-build qt6 kf6compat -kaccounts -cdrom"
 EOF
 
-cat <<EOF > /etc/portage/package.use/cmake.use
-dev-util/cmake -qt5
-EOF
-
-cat <<EOF > /etc/portage/package.use/grub.use
-sys-boot/grub mount
-EOF
-
-cat <<EOF > /etc/portage/package.use/kde-plasma.use
-# KDE Plasma
-kde-plasma/plasma-meta discover flatpak grub
-dev-qt/qttools qdbus designer
-
-# KDE Gear 23.04 on KF6
-kde-apps/kde-apps-meta accessibility admin -education -games -graphics multimedia -network pim -sdk utils
-kde-apps/kdenetwork-meta -bittorrent -dropbox -samba -screencast -webengine
-kde-apps/kdeutils-meta -cups
-EOF
-
-# Second Stage System Upgrade
-emerge --verbose --update --deep --changed-use --changed-deps=y @world
+# Setup KDE Desktop
+emerge plasma-meta kde-apps-meta
 
 # Setup Japanese Input Methods
 emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/monafont media-fonts/sazanami fontconfig app-i18n/mozc
-
-# Display Manager Install
-emerge x11-misc/sddm gui-libs/display-manager-init
 
 # Display Manager Setting
 cat <<EOF > /etc/conf.d/display-manager
@@ -173,14 +172,8 @@ EOF
 # Display Manager Enable
 rc-update add display-manager default
 
-# KDE Plasma Install
-emerge kde-plasma/plasma-meta kde-apps/kde-apps-meta kde-plasma/sddm-kcm
-
 # Other Application
 emerge app-office/calligra mail-client/thunderbird
-
-# PulseAudio Daemon Setup
-emerge --noreplace media-sound/pulseaudio-daemon
 
 # Google Chrome Install
 emerge www-client/google-chrome
@@ -194,16 +187,22 @@ rc-update add cupsd default
 # Firmware Install
 emerge sys-kernel/linux-firmware
 
-# Linux Kernel
-emerge sys-kernel/gentoo-kernel
+# Kernel Install 
+emerge sys-kernel/installkernel
+emerge sys-kernel/gentoo-sources
+cd /usr/src/*/
+cp /var/tmp/kernel/config .config
+make olddefconfig
+make $JOBS
+make modules_install
+make install
 
-# Grub2 Install
-emerge --verbose sys-boot/grub
-
-# Grub2 Boot Loader Install
-grub-install --target=x86_64-efi --efi-directory=/boot
-
-# Build Linux Kernel
+# Grub Setup
+emerge sys-boot/grub os-prober
+cat <<EOF >> /etc/default/grub
+GRUB_DISABLE_OS_PROBER=false
+EOF
+grub-install --efi-directory=/efi
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Make Gentoo User
@@ -212,12 +211,11 @@ passwd gentoo
 emerge app-admin/sudo
 cat /var/tmp/patches/sudo_nopasswd.patch | patch -u /etc/sudoers
 
-# Setting ibus
-cat <<EOF > /home/gentoo/.xprofile
-export GTK_IM_MODULE=ibus
-export QT_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-ibus-daemon -drx
-EOF
+# Setting Autostart
+mkdir -p /home/gentoo/.config/autostart/
+cp /var/tmp/*.desktop /home/gentoo/.config/autostart/
 
-chown gentoo:gentoo -R /home/gentoo/
+chown gentoo:gentoo -R /home/gentoo.config/autostart/
+
+# System Upgrade
+emerge --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world

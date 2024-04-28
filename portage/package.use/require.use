@@ -1,0 +1,2 @@
+>=x11-libs/gtk+-3.24.41 wayland
+>=x11-misc/appmenu-gtk-module-0.7.6 wayland

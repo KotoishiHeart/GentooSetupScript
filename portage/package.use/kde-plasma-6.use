@@ -1,0 +1,20 @@
+# KDE Plasma Common
+kde-plasma/plasma-meta discover flatpak grub accessibility sdk
+kde-plasma/plasma-desktop ibus
+dev-qt/qtbase accessibility
+dev-qt/qttools qdbus designer
+media-video/ffmpeg libass
+app-i18n/mozc ibus
+
+# KDE Gear
+kde-apps/kde-apps-meta accessibility admin -education -games graphics multimedia network pim -sdk utils
+kde-apps/kdenetwork-meta screencast
+kde-apps/kdemultimedia-meta cdrom
+kdepim-meta/kdepim-meta clamav
+kde-apps/kdeutils-meta gpg
+
+media-libs/libvpx postproc
+dev-qt/qtmultimedia gstreamer
+dev-qt/qtbase mysql
+dev-qt/qtpositioning geoclue
+dev-util/kdevelop -gdbui

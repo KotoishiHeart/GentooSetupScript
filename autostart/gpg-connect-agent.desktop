@@ -1,0 +1,7 @@
+[Desktop Entry]
+Exec=gpg-connect-agent reloadagent /bye
+Icon=
+Name=gpg-connect-agent
+Path=
+Terminal=False
+Type=Application

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+mkdir -p /usr/local/firestorm/
+cd /usr/local/firestorm/
+git clone https://github.com/FirestormViewer/fs-build-variables
+export AUTOBUILD_VARIABLES_FILE=/usr/local/firestorm/fs-build-variables/variables
+
+if ! [ -d ./phoenix-firestorm-alpha ]; then
+	git clone https://github.com/FirestormViewer/phoenix-firestorm-alpha/
+	cd ./phoenix-firestorm-alpha/
+else
+	cd ./phoenix-firestorm-alpha/
+	git fetch
+	LOCAL_HASH=`git rev-parse HEAD`
+	REMOTE_HASH=`git rev-parse origin/master`
+	echo $LOCAL_HASH
+	echo $REMOTE_HASH
+	if [ "$LOCAL_HASH" = "$REMOTE_HASH" ]; then
+		exit
+	else
+		git reset --hard origin/master
+		git clean -d -f
+		git pull
+	fi
+fi
+CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1*${CORES})+0.5)/10;"`
+curl http://download.airanyumi.net/firestorm-viewer/patches/program_backup_place_change.patch | patch -N -u -p1
+#curl http://download.airanyumi.net/firestorm-viewer/patches_alpha/pbr_viewer_559_00e7311960_3da26ee8df.patch | patch -N -f -u -p1 --no-backup-if-mismatch --merge
+curl http://download.airanyumi.net/firestorm-viewer/patches_alpha/fix_not_decleared_in_this_scope_1.patch | patch -N -u -p1
+curl http://download.airanyumi.net/firestorm-viewer/patches_alpha/fix_not_decleared_in_this_scope_2.patch | patch -N -u -p1
+#curl http://download.airanyumi.net/firestorm-viewer/patches_alpha/fix_not_decleared_in_this_scope_3.patch | patch -N -u -p1
+export CC=/usr/x86_64-pc-linux-gnu/gcc-bin/11/gcc
+export CXX=/usr/x86_64-pc-linux-gnu/gcc-bin/11/c++
+autobuild installables edit fmodstudio platform=linux64 hash=d4d484327c9be53d479c807332de4f06 url=http://download.airanyumi.net/firestorm-viewer/next-fmod/fmodstudio-2.02.16-linux64-232100740.tar.bz2
+autobuild installables edit glext platform=linux64 hash=12b2d643a013be8297bbbe37743abe94 url=http://3p.firestormviewer.org/glext-68-linux64-180841554.tar.bz2
+autobuild installables edit vulkan_gltf platform=linux64 hash=a26ea948cb77005cc972c4d014f1f540 url=http://download.airanyumi.net/firestorm-viewer/vulkan_gltf/vulkan_gltf-1-linux64-232670122.tar.bz2
+autobuild configure -A 64 -c ReleaseFS_open -- --fmodstudio --no-opensim --avx2 --package --clean --ninja --btype Release --jobs ${JOBS} --chan 'Alpha'
+if [ ! -e ./build-linux-x86_64/build.ninja ]; then
+	exit
+fi
+autobuild build -A 64 -c ReleaseFS_open -- --no-configure --ninja --jobs ${JOBS}
+ls ./build-linux-x86_64/newview/.Firestorm-x86_64-*.touched >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+	exit
+else
+	PACKAGE_FILE=`find . -name 'Phoenix*.tar.xz'`
+	cp $PACKAGE_FILE ../
+fi

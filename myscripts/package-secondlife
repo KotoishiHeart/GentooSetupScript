@@ -1,0 +1,38 @@
+#!/bin/bash
+
+cd /usr/local/secondlife/
+export AUTOBUILD_VARIABLES_FILE=/usr/local/secondlife/build-variables/variables
+
+if ! [ -d ./viewer ]; then
+        git clone https://github.com/secondlife/viewer -b release/maint-b
+        cd ./viewer
+else
+        cd ./viewer
+        git fetch
+        LOCAL_HASH=`git rev-parse HEAD`
+        REMOTE_HASH=`git rev-parse origin/release/maint-b`
+        echo $LOCAL_HASH
+        echo $REMOTE_HASH
+        if [ "$LOCAL_HASH" = "$REMOTE_HASH" ]; then
+                exit
+        else
+                git pull
+                git reset --hard origin/release/maint-b
+                git clean -d -f
+        fi
+fi
+CORES=`grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
+JOBS=`bc <<< "scale=0; 10*((1.5*${CORES})+0.5)/10;"`
+autobuild configure -A 64 -c ReleaseOS
+if [ ! -e ./build-linux-x86_64/build.ninja ]; then
+        exit
+fi
+autobuild build -A 64 -c ReleaseOS
+ls ./build-linux-x86_64/newview/.SecondLife-x86_64*.touched >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+        exit
+else
+        PACKAGE_FILE=`find . -name 'Second_Life*.tar.xz'`
+        cp $PACKAGE_FILE ../
+fi
+

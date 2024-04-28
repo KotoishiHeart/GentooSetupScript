@@ -65,10 +65,14 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
     mkdir -p /mnt/gentoo/usr/local/bin/
     mkdir -p /mnt/gentoo/var/tmp/
+    mkdir -p /mnt/gentoo/etc/portage/package.accept_keywords/
+    mkdir -p /mnt/gentoo/etc/portage/package.use/
     cp gentoo-setup-chroot.sh /mnt/gentoo/
-    cp myscripts/gentoo-update /mnt/gentoo/usr/local/bin/
-    cp myscripts/linux-update /mnt/gentoo/usr/local/bin/
+    cp myscripts/* /mnt/gentoo/usr/local/bin/
     cp --parents patches/sudo_nopasswd.patch /mnt/gentoo/var/tmp/
+    cp --parents kernel/config /mnt/gentoo/var/tmp/
+    cp --parents autostart/* /mnt/gentoo/var/tmp/
+    cp -R portage/* /mnt/gentoo/etc/portage/
     
     # UnPackage
     cd /mnt/gentoo/
@@ -91,6 +95,9 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     mount --make-rslave /mnt/gentoo/dev
     mount --rbind /run /mnt/gentoo/run
     mount --make-rslave /mnt/gentoo/run
+    mkdir -p /mnt/gentoo/run/udev
+    mount -o bind /run/udev /mnt/gentoo/run/udev
+    mount --make-rslave /mnt/gentoo/run/udev
     # Setup Start
     chroot /mnt/gentoo /gentoo-setup-chroot.sh
 elif [ $ret_root = 1 ]; then
@@ -103,4 +110,4 @@ echo "Setup Complete"
 
 # Cleanup
 rm ./stage3-*.tar.*
-rm ./gentoo-setup-chroot.sh
+rm ./setup_chroot.sh

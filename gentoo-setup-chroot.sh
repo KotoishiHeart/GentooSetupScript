@@ -145,9 +145,9 @@ done
 
 mkdir /etc/portage/package.unmask/
 cd /etc/portage/package.unmask/
-ln -s /var/db/repos/kde/Documents/package.unmask/kde-frameworks-6.1
-ln -s /var/db/repos/kde/Documents/package.unmask/kde-gear-24.02
-ln -s /var/db/repos/kde/Documents/package.unmask/kde-plasma-6.0
+ln -s /var/db/repos/kde/Documentation/package.unmask/kde-frameworks-6.1
+ln -s /var/db/repos/kde/Documentation/package.unmask/kde-gear-24.02
+ln -s /var/db/repos/kde/Documentation/package.unmask/kde-plasma-6.0
 
 # System Upgrade
 emerge --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world

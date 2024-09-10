@@ -1,55 +1,23 @@
 #!/bin/bash
 
+# Get Now Kernel Version
 str=`uname -r`
-
 CurrentLinuxVersion=`echo $str | awk -F'[-]' '{print $1}'`
 CurrentLinuxMajorVersion=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $1}'`
 CurrentLinuxMinorVersion=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $2}'`
 CurrentLinuxRevision=`echo $CurrentLinuxVersion | awk -F'[.]' '{print $3}'`
 
-dirs=`find /usr/src -maxdepth 1 -type d`
-NextLinuxVersion=''
-NextLinuxMajorVersion=$CurrentLinuxMajorVersion
-NextLinuxMinorVersion=$CurrentLinuxMinorVersion
-NextLinuxRevision=$CurrentLinuxRevision
-for dir in $dirs;
-do
-    LinuxVersion=`echo $dir | awk -F'[-]' '{print $2}'`
-    if [ "${LinuxVersion}" != "" ]; then
-        LinuxMajorVersion=`echo $LinuxVersion | awk -F'[.]' '{print $1}'`
-        LinuxMinorVersion=`echo $LinuxVersion | awk -F'[.]' '{print $2}'`
-        LinuxRevision=`echo $LinuxVersion | awk -F'[.]' '{print $3}'`
-        if [ $(($LinuxMajorVersion)) -gt $(($NextLinuxMajorVersion)) ]; then
-            NextLinuxVersion=$LinuxVersion
-            NextLinuxMajorVersion=$LinuxMajorVersion
-            NextLinuxMinorVersion=$LinuxMinorVersion
-            NextLinuxRevision=$LinuxRevision
-        elif [ $(($LinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) -a $(($LinuxMinorVersion)) -gt $(($NextLinuxMinorVersion)) ]; then
-            NextLinuxVersion=$LinuxVersion
-            NextLinuxMajorVersion=$LinuxMajorVersion
-            NextLinuxMinorVersion=$LinuxMinorVersion
-            NextLinuxRevision=$LinuxRevision
-        elif [ $(($LinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) -a $(($LinuxMinorVersion)) -eq $(($NextLinuxMinorVersion)) -a $(($LinuxRevision)) -gt $(($NextLinuxRevision)) ]; then
-            NextLinuxVersion=$LinuxVersion
-            NextLinuxMajorVersion=$LinuxMajorVersion
-            NextLinuxMinorVersion=$LinuxMinorVersion
-            NextLinuxRevision=$LinuxRevision
-        fi
-    fi
-done
+cd /usr/src/linux
 
-RES=`find /boot -name *${NextLinuxVersion}* 2>/dev/null`
-if [ $? -ne 0 ]; then
-  exit
-elif [ -n "$RES" ]; then
-  exit
-fi
+# Update Check
+NextLinuxMajorVersion=`grep '^VERSION = ' Makefile | sed -e "s/VERSION = //"`
+NextLinuxMinorVersion=`grep '^PATCHLEVEL = ' Makefile | sed -e "s/PATCHLEVEL = //"`
+NextLinuxRevision=`grep '^SUBLEVEL = ' Makefile | sed -e "s/SUBLEVEL = //"`
 
-if [ "${NextLinuxVersion}" != "" ]; then
-    cd /usr/src/
-    rm linux
-    ln -s *${NextLinuxVersion}* linux
-    cd /usr/src/*${NextLinuxVersion}*
+# Update Kernel
+if [[ ( $(($CurrentLinuxMajorVersion)) -lt $(($NextLinuxMajorVersion)) ) || \
+    ($(($CurrentLinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) && $(($CurrentLinuxMinorVersion)) -lt $(($NextLinuxMinorVersion))) || \
+    ($(($CurrentLinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) && $(($CurrentLinuxMinorVersion)) -eq $(($NextLinuxMinorVersion)) && $(($CurrentLinuxRevision)) -lt $(($NextLinuxRevision))) ]]; then
     make olddefconfig
     make -j `grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
     make modules_install

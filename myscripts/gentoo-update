@@ -17,6 +17,8 @@ do
     rm -f $FILE
 done
 
+cd /etc/portage/package.accept_keywords/
+#FILES=`find /var/db/repos/kde/Documentation/package.accept_keywords/ -name "*.keywords" -not -name "*-live.keywords" -not -name "*9999*.keywords" -not -name "kde-frameworks-6.3.keywords"`
 FILES=`find /var/db/repos/kde/Documentation/package.accept_keywords/ -name "*.keywords" -not -name "*-live.keywords" -not -name "*9999*.keywords"`
 for FILE in $FILES;
 do
@@ -27,8 +29,8 @@ do
 done
 
 # System Update
-emerge --ask --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world
-emerge --ask @smart-live-rebuild
+emerge --ask --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y --backtrack=30 --keep-going @world
+emerge --ask --keep-going @smart-live-rebuild
 eclean --deep distfiles
 eclean --deep packages
 

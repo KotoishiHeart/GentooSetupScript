@@ -28,7 +28,7 @@ LC_MESSAGES=C.utf8
 CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
 
 # add option autounmask-write and continue
-EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts"
+EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts --verbose --quiet-build"
 
 # Add Compile Option
 MAKEOPTS="-j $JOBS"
@@ -52,11 +52,14 @@ GRUB_PLATFORMS="efi-64"
 L10N="ja"
 EOF
 
+# Need eclean
+emerge app-portage/gentoolkit
+
 # GIT Install
 emerge dev-vcs/git
 
 # Generate Locale JP
-localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 eselect locale set 4
 source /etc/profile
@@ -70,23 +73,23 @@ emerge sys-apps/mlocate net-misc/dhcpcd
 rc-update add dhcpcd default
 
 # NTPD Setting
-emerge net-misc/ntp
-mv /etc/ntp.conf /etc/ntp.conf.old
-mv /etc/conf.d/ntp-client /etc/conf.d/ntp-client.old
+emerge net-misc/chrony
+cat <<EOF > /etc/chrony/chrony.conf
+# Use public NTP servers from the pool.ntp.org project.
+pool ntp.nict.jp iburst
 
-# NTPD Server Select
-cat <<EOF > /etc/ntp.conf
-server ntp.nict.jp
+# In first three updates step the system clock instead of slew
+# if the adjustment is larger than 1 second.
+makestep 1.0 3
+
+# Enable kernel synchronization of the real-time clock (RTC).
+rtcsync
+
+hwclockfile /etc/adjtime
 EOF
 
-# NTPD Client Setting
-cat <<EOF > /etc/conf.d/ntp-client
-NTPCLIENT_CMD="ntpdate"
-NTPCLIENT_OPTS="-s -d -u "ntp.nict.jp"
-EOF
-
-# NTPD Booted Start
-rc-update add ntpd default
+# Chronyd Booted Start
+rc-update add chronyd default
 
 # ESelect Repository Enable
 emerge eselect-repository
@@ -95,73 +98,40 @@ emerge eselect-repository
 eselect repository enable kde
 
 # Original Profile Add
-eselect repository add khgenrepo git https://github.com/KotoishiHeart/khgenrepo
+eselect repository add custom_profile git https://github.com/KotoishiHeart/khcustomprofile/
 
 # Gentoo Repository Setup
-mkdir -p /etc/portage/repos.conf/
-rm -rf /var/db/repos/gentoo
-cat <<EOF > /etc/portage/repos.conf/gentoo.conf
-[DEFAULT]
-main-repo = gentoo
+eselect repository enable gentoo
 
-[gentoo]
-location = /var/db/repos/gentoo
-sync-type = git
-sync-uri = https://github.com/gentoo-mirror/gentoo
-sync-git-verify-commit-signature = yes
-auto-sync = yes
-sync-openpgp-key-path = /usr/share/openpgp-keys/gentoo-release.asc
-sync-openpgp-keyserver = hkps://keys.gentoo.org
-sync-openpgp-key-refresh-retry-count = 40
-sync-openpgp-key-refresh-retry-overall-timeout = 1200
-sync-openpgp-key-refresh-retry-delay-exp-base = 2
-sync-openpgp-key-refresh-retry-delay-max = 60
-sync-openpgp-key-refresh-retry-delay-mult = 4
-EOF
+# Add Repository Setup
+eselect repository enable kde
+eselect repository enable guru
+eselect repository enable qt
+eselect repository enable catalyst
 
 # Repositories Sync
-emerge --sync
-
-cd /etc/portage/
-rm make.profile
-ln -s ../../var/db/repos/khgenrepo/profiles/default/linux/amd64/23.0/no-multilib/desktop make.profile
-
-# KDE Repository Accept Keywords Setting
-cd /etc/portage/package.accept_keywords/
-FILES=`find . -xtype l`
-for FILE in $FILES;
-do
-    rm -f $FILE
-done
-
-FILES=`find /var/db/repos/kde/Documentation/package.accept_keywords/ -name "*.keywords" -not -name "*9999*.keywords" -not -name "*live*.keywords"`
-for FILE in $FILES;
-do
-    FILENAME=`basename $FILE`
-    if [ ! -f $FILENAME ]; then
-      ln -s $FILE
-    fi
-done
-
-mkdir /etc/portage/package.unmask/
-cd /etc/portage/package.unmask/
-ln -s /var/db/repos/kde/Documentation/package.unmask/kde-frameworks-6.1
-ln -s /var/db/repos/kde/Documentation/package.unmask/kde-gear-24.02
-ln -s /var/db/repos/kde/Documentation/package.unmask/kde-plasma-6.0
+emaint sync --repo custom_profile
+emaint sync --repo kde
+emaint sync --repo guru
+emaint sync --repo qt
+emaint sync --repo catalyst
 
 # System Upgrade
-emerge --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world
+emerge --update --deep --newuse --changed-deps=y --with-bdeps=y @world
 
-cat <<EOF >> /etc/portage/make.conf
+# Custom Profile Set
+cd /etc/portage/
+rm make.profile
+ln -s ../../var/db/repos/custom_profile/profiles/default/linux/amd64/23.0/no-multilib/desktop/plasma make.profile
 
-USE="cjk emoji jumbo-build qt6 kf6compat -kaccounts -cdrom"
-EOF
+# Change no-multilib desktop profile
+emerge --update --deep --newuse --changed-deps=y --with-bdeps=y @world
 
 # Setup KDE Desktop
 emerge plasma-meta kde-apps-meta
 
 # Setup Japanese Input Methods
-emerge media-fonts/kochi-substitute media-fonts/ja-ipafonts media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/monafont media-fonts/sazanami fontconfig app-i18n/mozc
+emerge media-fonts/fonts-meta media-fonts/kochi-substitute media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/sazanami
 
 # Display Manager Setting
 cat <<EOF > /etc/conf.d/display-manager
@@ -173,7 +143,7 @@ EOF
 rc-update add display-manager default
 
 # Other Application
-emerge app-office/calligra mail-client/thunderbird
+emerge mail-client/thunderbird
 
 # Google Chrome Install
 emerge www-client/google-chrome
@@ -214,8 +184,20 @@ cat /var/tmp/patches/sudo_nopasswd.patch | patch -u /etc/sudoers
 # Setting Autostart
 mkdir -p /home/gentoo/.config/autostart/
 cp /var/tmp/*.desktop /home/gentoo/.config/autostart/
+chown gentoo:gentoo -R /home/gentoo/.config/autostart/
 
-chown gentoo:gentoo -R /home/gentoo.config/autostart/
+rm -rf /varr/db/repos/gentoo
+emerge --sync
 
 # System Upgrade
-emerge --verbose --update --deep --newuse --changed-deps=y --with-bdeps=y @world
+emerge --update --deep --newuse --changed-deps=y --with-bdeps=y @world
+
+# CleanUp
+emerge --depclean
+eclean --deep distfiles
+eclean --deep packages
+
+find /var/tmp/portage/ -maxdepth 2
+rm -rf /var/tmp/portage/*
+rm -rf /var/cache/distfiles/*
+rm -rf /var/cache/binpkgs/*

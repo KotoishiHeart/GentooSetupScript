@@ -18,7 +18,7 @@ NextLinuxRevision=`grep '^SUBLEVEL = ' Makefile | sed -e "s/SUBLEVEL = //"`
 if [[ ( $(($CurrentLinuxMajorVersion)) -lt $(($NextLinuxMajorVersion)) ) || \
     ($(($CurrentLinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) && $(($CurrentLinuxMinorVersion)) -lt $(($NextLinuxMinorVersion))) || \
     ($(($CurrentLinuxMajorVersion)) -eq $(($NextLinuxMajorVersion)) && $(($CurrentLinuxMinorVersion)) -eq $(($NextLinuxMinorVersion)) && $(($CurrentLinuxRevision)) -lt $(($NextLinuxRevision))) ]]; then
-    make olddefconfig
+    make alldefconfig
     make -j `grep cpu.cores /proc/cpuinfo | sort -u | sed 's/[^0-9]//g'`
     make modules_install
     make install

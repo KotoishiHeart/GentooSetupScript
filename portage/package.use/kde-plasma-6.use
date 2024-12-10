@@ -1,10 +1,12 @@
 # KDE Plasma Common
 kde-plasma/plasma-meta discover flatpak grub accessibility sdk
-kde-plasma/plasma-desktop ibus
+kde-plasma/plasma-desktop fcitx5
 dev-qt/qtbase accessibility
 dev-qt/qttools qdbus designer
 media-video/ffmpeg libass
-app-i18n/mozc ibus
+app-i18n/mozc fcitx5
+media-fonts/fonts-meta cjk emoji
+app-i18n/fcitx emoji
 
 # KDE Gear
 kde-apps/kde-apps-meta accessibility admin -education -games graphics multimedia network pim -sdk utils
@@ -18,3 +20,4 @@ dev-qt/qtmultimedia gstreamer
 dev-qt/qtbase mysql
 dev-qt/qtpositioning geoclue
 dev-util/kdevelop -gdbui
+dev-qt/qtwebengine jumbo-build

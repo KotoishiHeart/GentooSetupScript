@@ -59,7 +59,7 @@ mountpoint -q /mnt/gentoo/boot/
 ret_boot=$?
 
 GENTOO_TARBALL_MIRROR_ROOT=http://ftp.iij.ad.jp/pub/linux/gentoo/releases/amd64/autobuilds/
-GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64-desktop-openrc.txt --silent | grep stage | cut -d' ' -f 1`
+GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64-nomultilib-openrc.txt --silent | grep stage | cut -d' ' -f 1`
 
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy

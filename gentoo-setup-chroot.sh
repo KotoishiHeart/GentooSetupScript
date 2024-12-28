@@ -28,11 +28,14 @@ CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/port
 # add option autounmask-write and continue
 EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts --verbose --quiet-build --keep-going"
 
+# CPU Flags
+CPU_FLAGS_X86="aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse3 sse4_1 sse4_2 sse4a ssse3 vpclmulqdq"
+
 # Add Compile Option
 MAKEOPTS="-j 20"
 
 # Video Chip Setting
-VIDEO_CARDS="amdgpu radeon"
+VIDEO_CARDS="amdgpu radeonsi radeon"
 
 # Accepted Licanse
 ACCEPT_LICENSE="* -@EULA google-chrome"
@@ -48,6 +51,9 @@ GRUB_PLATFORMS="efi-64"
 
 # Language Setting
 L10N="ja"
+
+# Use Flags
+USE="wayland-only"
 EOF
 
 # Need eclean

@@ -5,7 +5,7 @@ dev-qt/qtbase accessibility
 dev-qt/qttools qdbus designer
 media-video/ffmpeg libass
 app-i18n/mozc fcitx5
-media-fonts/fonts-meta cjk emoji
+media-fonts/noto cjk
 app-i18n/fcitx emoji
 
 # KDE Gear
@@ -21,3 +21,6 @@ dev-qt/qtbase mysql
 dev-qt/qtpositioning geoclue
 dev-util/kdevelop -gdbui
 dev-qt/qtwebengine jumbo-build
+
+media-video/pipewire -sound-server
+media-sound/pulseaudio daemon

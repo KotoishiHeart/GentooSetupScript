@@ -55,7 +55,7 @@ COMMENTOUT
 mountpoint -q /mnt/gentoo/
 ret_root=$?
 
-mountpoint -q /mnt/gentoo/boot/
+mountpoint -q /mnt/gentoo/efi/
 ret_boot=$?
 
 GENTOO_TARBALL_MIRROR_ROOT=http://ftp.iij.ad.jp/pub/linux/gentoo/releases/amd64/autobuilds/
@@ -63,6 +63,7 @@ GENTOO_TARBALL_LASTEST=`curl ${GENTOO_TARBALL_MIRROR_ROOT}latest-stage3-amd64-no
 
 if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     # User Script Copy
+    mkdir -p /mnt/gentoo/boot/
     mkdir -p /mnt/gentoo/usr/local/bin/
     mkdir -p /mnt/gentoo/var/tmp/
     mkdir -p /mnt/gentoo/etc/portage/package.accept_keywords/
@@ -103,7 +104,7 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
 elif [ $ret_root = 1 ]; then
     echo "ERROR: The drive for installing Gentoo Linux is not mounted in the /mnt/gentoo/ folder."
 else
-    echo "ERROR: The drive for installing the boot manager and Linux kernel is not mounted in the /mnt/gentoo/boot/ folder."
+    echo "ERROR: The drive for installing the boot manager and Linux kernel is not mounted in the /mnt/gentoo/efi/ folder."
 fi
 
 echo "Setup Complete"

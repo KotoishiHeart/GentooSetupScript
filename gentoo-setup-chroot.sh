@@ -7,8 +7,6 @@ source /etc/profile
 emerge-webrsync
 
 # Portage Configure Set
-CORES=`grep processor /proc/cpuinfo | wc -l`
-JOBS=`bc <<< "scale=0; 10*((0.8*${CORES})+0.5)/10;"`
 cat <<EOF > /etc/portage/make.conf
 # These settings were set by the catalyst build script that automatically built this stage.
 # Please consult /usr/share/portage/config/make.conf.example for a more detailed example.
@@ -28,10 +26,10 @@ LC_MESSAGES=C.utf8
 CONFIG_PROTECT_MASK="/etc/portage/package.accept_keywords/zzz.keywords /etc/portage/package.use/zzz.use"
 
 # add option autounmask-write and continue
-EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts --verbose --quiet-build"
+EMERGE_DEFAULT_OPTS="--autounmask-write=y --autounmask-license=y --autounmask-continue=y --with-bdeps=y --verbose-conflicts --verbose --quiet-build --keep-going"
 
 # Add Compile Option
-MAKEOPTS="-j $JOBS"
+MAKEOPTS="-j 20"
 
 # Video Chip Setting
 VIDEO_CARDS="amdgpu radeon"
@@ -58,11 +56,24 @@ emerge app-portage/gentoolkit
 # GIT Install
 emerge dev-vcs/git
 
+# Bash Support Install
+emerge app-shells/bash-completion
+
+# IO Scheduler Install
+emerge sys-block/io-scheduler-udev-rules
+
+# Smart Live Rebuild
+emerge app-portage/smart-live-rebuild
+
 # Generate Locale JP
 echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 eselect locale set 4
 source /etc/profile
+
+# Keymap Setting
+sed -i -e 's/keymap="us"/keymap="jp106"/' /etc/conf.d/keymaps
+rc-update add keymaps boot
 
 # Timezone Setting
 echo "Asia/Tokyo" > /etc/timezone
@@ -94,14 +105,11 @@ rc-update add chronyd default
 # ESelect Repository Enable
 emerge eselect-repository
 
-# KDE Repository Add
-eselect repository enable kde
+# Gentoo Repository Setup
+eselect repository enable gentoo
 
 # Original Profile Add
 eselect repository add custom_profile git https://github.com/KotoishiHeart/khcustomprofile/
-
-# Gentoo Repository Setup
-eselect repository enable gentoo
 
 # Add Repository Setup
 eselect repository enable kde
@@ -124,11 +132,15 @@ cd /etc/portage/
 rm make.profile
 ln -s ../../var/db/repos/custom_profile/profiles/default/linux/amd64/23.0/no-multilib/desktop/plasma make.profile
 
+# Sound Mode Change
+emerge --unmerge media-video/pipewire media-sound/pulseaudio
+emerge --noreplace media-sound/pulseaudio-daemon
+
 # Change no-multilib desktop profile
 emerge --update --deep --newuse --changed-deps=y --with-bdeps=y @world
 
 # Setup KDE Desktop
-emerge plasma-meta kde-apps-meta
+emerge plasma-meta kde-apps-meta app-i18n/mozc
 
 # Setup Japanese Input Methods
 emerge media-fonts/fonts-meta media-fonts/kochi-substitute media-fonts/vlgothic media-fonts/mplus-outline-fonts media-fonts/sazanami
@@ -163,7 +175,7 @@ emerge sys-kernel/gentoo-sources
 cd /usr/src/*/
 cp /var/tmp/kernel/config .config
 make olddefconfig
-make $JOBS
+make -j 20
 make modules_install
 make install
 

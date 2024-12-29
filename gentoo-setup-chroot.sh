@@ -210,6 +210,12 @@ emerge --sync
 # System Upgrade
 emerge --update --deep --newuse --changed-deps=y --with-bdeps=y @world
 
+# Flatpak Install
+emerge sys-apps/flatpak
+
+# Initialize Flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
 # CleanUp
 emerge --depclean
 eclean --deep distfiles

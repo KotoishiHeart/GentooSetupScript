@@ -15,12 +15,10 @@ kde-apps/kdemultimedia-meta cdrom
 kdepim-meta/kdepim-meta clamav
 kde-apps/kdeutils-meta gpg
 
-media-libs/libvpx postproc
-dev-qt/qtmultimedia gstreamer
-dev-qt/qtbase mysql
 dev-qt/qtpositioning geoclue
-dev-util/kdevelop -gdbui
-dev-qt/qtwebengine jumbo-build
 
 media-video/pipewire -sound-server
 media-sound/pulseaudio daemon
+
+# Steam Proton
+media-libs/mesa vulkan

@@ -1,2 +1,5 @@
 # Kernel
 sys-kernel/gentoo-sources symlink
+
+# Easy Anti Cheat
+sys-libs/glibc hash-sysv-compat stack-realign

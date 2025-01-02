@@ -217,6 +217,15 @@ EOF
 cp /var/tmp/*.desktop /home/gentoo/.config/autostart/
 chown gentoo:gentoo -R /home/gentoo/.config/
 
+# Setting fstab
+cat <<EOF >> /etc/fstab
+UUID=83B8-B3C6                               /boot               vfat       defaults                    1 2
+UUID=50f93c91-753c-4f32-addf-00236ad1e250    swap                swap       sw                          0 0
+UUID=264083284082FE35                        /disk/DataVolume1   ntfs-3g    defaults,uid=1000,gid=1000  0 0
+UUID=40C04477C0447566                        /disk/DataVolume2   ntfs3      defaults,uid=1000,gid=1000  0 0
+UUID=E4D4AB90D4AB6390                        /disk/SharedVolume  ntfs3      defaults,uid=1000,gid=1000  0 0
+EOF
+
 rm -rf /var/db/repos/gentoo
 emerge --sync
 

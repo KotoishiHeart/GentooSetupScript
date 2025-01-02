@@ -74,6 +74,11 @@ if [ $ret_root = 0 ] && [ $ret_boot = 0 ]; then
     cp --parents kernel/config /mnt/gentoo/var/tmp/
     cp --parents autostart/* /mnt/gentoo/var/tmp/
     cp -R portage/* /mnt/gentoo/etc/portage/
+
+    # Create Empty Directory
+    mkdir -p /disk/DataVolume1
+    mkdir -p /disk/DataVolume2
+    mkdir -p /disk/SharedVolume
     
     # UnPackage
     cd /mnt/gentoo/

@@ -199,12 +199,25 @@ passwd gentoo
 emerge app-admin/sudo
 cat /var/tmp/patches/sudo_nopasswd.patch | patch -u /etc/sudoers
 
-# Setting Autostart
+# Initialize KDE Plasma Setting
 mkdir -p /home/gentoo/.config/autostart/
+# Setting Language
+cat <<EOF > kxkbrc
+[Layout]
+DisplayNames=
+LayoutList=jp
+Use=true
+VariantList=OADG109A
+EOF
+cat <<EOF > plasma-localerc
+[Formats]
+LANG=ja_JP.utf8
+EOF
+# Setting Autostart
 cp /var/tmp/*.desktop /home/gentoo/.config/autostart/
-chown gentoo:gentoo -R /home/gentoo/.config/autostart/
+chown gentoo:gentoo -R /home/gentoo/.config/
 
-rm -rf /varr/db/repos/gentoo
+rm -rf /var/db/repos/gentoo
 emerge --sync
 
 # System Upgrade
